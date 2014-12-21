@@ -21,7 +21,7 @@ net = lambda pkt, idx: ord(pkt[idx]) * 0x100 + ord(pkt[idx + 1])
 pkts = []
 last_packet_no = -1
 
-os.mkdir("partial-frames")
+# os.mkdir("partial-frames")
 
 
 while 1 > 0 :
@@ -62,17 +62,23 @@ while 1 > 0 :
                     # print(pkts)
                 else:
                     frame = "".join(pkts)
+                    # TODO save to file and produce stream
                     try:
                         pass
-                        # i = cv2.imdecode(np.fromstring(frame, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
-                        # cv2.imshow('i',i)
+                        i = cv2.imdecode(np.fromstring(frame, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
+                        cv2.imshow('i',i)
+                        k = cv2.waitKey(1)
+                        if k == 27:
+                            exit(0)
+                        if k == 32:
+                            f = open("f-{:d}.jpeg".format(f_no), "w")
+                            f.write(frame)
+                            f.close()
                     except:
                         print("Frame: {:d}".format(f_no), file=sys.stderr)
                         f = open("frames/f-{:d}.jpeg".format(f_no), "w")
                         f.write(frame)
                         f.close()
-                    if cv2.waitKey(1) ==27:
-                        exit(0)
                 pkts = []
 
 
