@@ -8,6 +8,8 @@ import sys
 import os
 import cv2
 import numpy as np
+import datetime
+import time
 
 MAGIC_PACKET_NO = 0x8000
 
@@ -28,7 +30,7 @@ def handle_full_packet(pkts, curr_frame, curr_pkt_no):
     frame = "".join(pkts)
     display_frame(frame)
     # TODO save to file and produce stream
-    # save_frame(frame)
+    save_frame(frame)
     # transmit_frame(frame)
 
 if "-d" in sys.argv:
@@ -47,6 +49,37 @@ if "-d" in sys.argv:
             pass
 else:
     display_frame = lambda frame: None
+
+
+TIME_10_MINS = datetime.timedelta(seconds=60)
+output = (datetime.datetime.utcfromtimestamp(0),None)
+frames = 100
+
+def rotate_file():
+    global output, frames
+    open_time, file = output
+    curr_time = datetime.datetime.utcnow()
+    if open_time + TIME_10_MINS < curr_time:
+    # if frames > 5:
+        # TODO rotate.
+        if file:
+            file.flush()
+            file.close()
+        new_file = open("backups-{:%Y-%m-%d_%H.%M.%S.%f}-.mjpg".format(curr_time), "wb")
+        output = (curr_time, new_file)
+        # print("File: {:s}".format(file))
+        # fps = (frames + 1) / (curr_time - open_time).total_seconds()
+        #
+        # print("FPS:  {:f}".format(fps))
+        frames = 0
+
+
+def save_frame(frame):
+    rotate_file()
+    global frames
+    frames += 1
+    output[1].write(frame)
+    output[1].flush()
 
 
 

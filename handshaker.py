@@ -18,7 +18,8 @@ to_rcvr = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 to_rcvr.bind(("0.0.0.0", PORT))
 
+print("Bound & Sending")
+
 while 1 > 0:
-    print("Sending")
     to_rcvr.sendto(data, (TO_IP, PORT))
     time.sleep(1)
