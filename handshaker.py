@@ -2,10 +2,10 @@ from __future__ import print_function
 import socket
 import time
 
-
+resp_online_ = "54:46:36:7A:60:02:00:00:00:00:00:03:03:01:00:26:00:00:00:00:02:34:C2"
 response_hex = "54:46:36:7a:60:02:00:00:5d:3e:00:03:03:01:00:26:19:19:00:00:f5:a2:31:00"
 data = ""
-for hexdec in response_hex.split(":"):
+for hexdec in resp_online_.split(":"):
     data += chr(int(hexdec, 16))
 
 # FROM_IP = "226.2.2.2"
