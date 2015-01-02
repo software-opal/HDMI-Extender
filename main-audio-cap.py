@@ -1,15 +1,34 @@
+#!/usr/bin/env python
 from __future__ import print_function
 import socket
 import struct
 import select
 import time
 import sys
+import datetime
 
 AUDIO_PORT = 2066
 
 sock = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
 net = lambda pkt, idx: ord(pkt[idx]) * 0x100 + ord(pkt[idx + 1])
+
+curr_time = datetime.datetime.utcnow()
+
+file_name = "audio-backups-{:%Y-%m-%d_%H-%M-%S-%f}-.avi".format(curr_time)
+print(file_name)
+# output = av.open(file_name, 'w')
+
+
+
+# audio_stream = output.add_stream("flac")
+# resampler = av.AudioResampler(
+#                        format=av.AudioFormat("s32"),
+#                        layout="stereo",
+#                        rate=48000)
+
+
+
 
 # Audio Details.
 # 2 Chanels
