@@ -1,18 +1,21 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 from __future__ import print_function
 
 import socket
 import sys
-import cv2
 from PIL import Image
 import datetime
 import av
 from cStringIO import StringIO
+import cv2
+import struct
 
 
 MAGIC_PACKET_NO = 0x8000
 VIDEO_FPS = 30
 TIME_10_MINS = datetime.timedelta(seconds=60)
+# From `netinet/if_ether.h` - it must be right
+ETHERTYPE_IP = socket.htons(0x0800)
 
 import logging
 
@@ -38,10 +41,10 @@ def handle_full_packet(pkts, curr_frame, curr_pkt_no):
     frame = "".join(pkts)
     # image = cv2.imdecode(np.fromstring(frame, dtype=np.uint8),cv2.CV_LOAD_IMAGE_COLOR)
 
-#    f = open("file" + str(curr_frame) + ".jpeg", "wb")
+    f = open("file" + str(curr_frame) + ".jpeg", "wb")
 
-#    f.write(frame)
-#    f.close()
+    f.write(frame)
+    f.close()
 
     print(curr_frame, " - Has been recieved.")
 
@@ -189,8 +192,17 @@ def save_image_frame(frame, image):
 
 
 
-raw_socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.htons(0x0800))
+raw_socket = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, ETHERTYPE_IP)
 raw_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024)
+
+
+mreq = struct.pack("4sl", socket.inet_aton("239.8.1.1"), socket.INADDR_ANY)
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+s.bind(('239.8.1.1', 2067))
+s.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+
+# print(s.recvfrom(4096))
 
 net = lambda packet, idx: ord(packet[idx]) * 0x100 + ord(packet[idx + 1])
 
